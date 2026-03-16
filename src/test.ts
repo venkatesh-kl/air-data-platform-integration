@@ -20,13 +20,17 @@ async function loadDataForOrg(orgId: string): Promise<void> {
 
 async function main(): Promise<void> {
   cleanOutputDir();
-  const orgs = await AIRDPModel.getallOrgs();
-  saveJSONFile("orgs", orgs);
 
-  for (const orgId of orgs) {
-    console.log(`Loading data for org: ${orgId}`);
-    await loadDataForOrg(orgId);
-  }
+  // uncomment below to run for all orgs in dev
+  // const orgs = await AIRDPModel.getallOrgs();
+  // saveJSONFile("orgs", orgs);
+
+  // for (const orgId of orgs) {
+  //   console.log(`Loading data for org: ${orgId}`);
+  //   await loadDataForOrg(orgId);
+  // }
+
+  loadDataForOrg("6533");
 }
 
 main().catch((error) => {

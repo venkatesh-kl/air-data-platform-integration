@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "tsx src/data-platform-test.ts"
+    "start": "tsx src/test.ts"
   },
   "type": "module",
   "keywords": [],
@@ -13,7 +13,8 @@
   "license": "ISC",
   "packageManager": "pnpm@10.31.0",
   "dependencies": {
-    "@diligentcorp/data-platform-api-client": "1.1.0"
+    "@diligentcorp/data-platform-api-client": "1.1.0",
+    "p-map": "^7.0.4"
   },
   "devDependencies": {
     "@types/node": "^22.19.15",
