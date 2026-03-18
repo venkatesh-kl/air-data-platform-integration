@@ -1,0 +1,13 @@
+@baseUrl = http://localhost:3000
+
+### List all orgs with data in the data platform
+GET {{baseUrl}}/orgs
+
+### List data sources for an org (path param: orgId)
+GET {{baseUrl}}/data-sources/6533
+
+### Preview data for a specific org, product, schema (path params)
+GET {{baseUrl}}/preview/6533/risk_manager/controls_aggregated
+
+### Preview data for a specific org, product, schema (path params)
+GET {{baseUrl}}/preview/6533/risk_manager/controls_aggregated/details
