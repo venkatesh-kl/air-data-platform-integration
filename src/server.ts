@@ -3,6 +3,7 @@ import { serve } from "@hono/node-server";
 import { type Context, Hono } from "hono";
 import { performance } from "node:perf_hooks";
 import airDpModel from "./air-dp-model";
+import { saveJSONFile } from "./file-utils";
 
 const app = new Hono();
 const port = Number(process.env["PORT"]) || 3000;
@@ -36,7 +37,9 @@ app.get("/orgs", async (ctx) =>
 app.get("/data-sources/:orgId", async (ctx) =>
   asyncHandler(async () => {
     const orgId = ctx.req.param("orgId");
-    return await airDpModel.getDataSources(orgId);
+    const result = await airDpModel.getDataSources(orgId);
+    saveJSONFile(`${orgId}/dataSources`, result);
+    return result;
   }, ctx),
 );
 
@@ -45,7 +48,9 @@ app.get("/preview/:orgId/:product/:schema", async (ctx) =>
     const orgId = ctx.req.param("orgId");
     const product = ctx.req.param("product");
     const schema = ctx.req.param("schema");
-    return await airDpModel.getPreviewData(orgId, product, schema);
+    const result = await airDpModel.getPreviewData(orgId, product, schema);
+    saveJSONFile(`${orgId}/${product}/${schema}/preview`, result);
+    return result;
   }, ctx),
 );
 
@@ -54,7 +59,9 @@ app.get("/preview/:orgId/:product/:schema/details", async (ctx) =>
     const orgId = ctx.req.param("orgId");
     const product = ctx.req.param("product");
     const schema = ctx.req.param("schema");
-    return await airDpModel.getSchema(orgId, product, schema);
+    const result = await airDpModel.getSchema(orgId, product, schema);
+    saveJSONFile(`${orgId}/${product}/${schema}/details`, result);
+    return result;
   }, ctx),
 );
 

@@ -80,7 +80,8 @@ class AIRDpModel {
       schema,
       `SELECT * FROM ${schema} LIMIT 10`,
     );
-    return (previewData as QueryResponse).results ?? [];
+    const { results = [] } = previewData as QueryResponse;
+    return { schema, results, product, orgId };
   }
 }
 
