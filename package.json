@@ -8,8 +8,9 @@
     "start": "pnpm dlx nodemon --exec \"tsx\" ./src/server.ts --ignore ./output"
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "license": "ISC",
   "packageManager": "pnpm@10.31.0",
   "dependencies": {
