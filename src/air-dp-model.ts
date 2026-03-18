@@ -13,9 +13,9 @@ class AIRDpModel {
   }
 
   async getallOrgs(): Promise<string[]> {
-    logger.info(`getallOrgs - fetching all orgs`);
+    logger.debug(`getallOrgs - fetching all orgs`);
     const orgs = await this.client.fetchOrganizations();
-    logger.info(`getallOrgs - successfully fetched orgs`, {
+    logger.debug(`getallOrgs - successfully fetched orgs`, {
       orgCount: orgs.data.count,
     });
     return orgs.data.orgids;
@@ -29,7 +29,7 @@ class AIRDpModel {
     }> = [];
     for (const product of products) {
       const schemas = await this.client.getProductSchemas(product, orgId);
-      console.log(`found ${schemas.length} schemas for ${orgId}/${product}`);
+      logger.debug(`found ${schemas.length} schemas for ${orgId}/${product}`);
 
       schemasPerProduct.push(
         ...schemas.map((schema) => ({
@@ -40,7 +40,7 @@ class AIRDpModel {
       );
     }
     const schemas = schemasPerProduct.flat();
-    logger.info(`getDataSourcesForOrg - fetched schemas for org ${orgId}`, {
+    logger.debug(`getDataSourcesForOrg - fetched schemas for org ${orgId}`, {
       count: schemas.length,
       orgId,
     });
@@ -58,11 +58,11 @@ class AIRDpModel {
   }
 
   async getSchema(orgId: string, product: string, schema: string) {
-    logger.info(
+    logger.debug(
       `getSchema - fetching schema for ${orgId}/${product}/${schema}`,
     );
     const result = await this.client.getSchemaForTable(product, schema, orgId);
-    logger.info(
+    logger.debug(
       `getSchema - fetched schema for ${orgId}/${product}/${schema} successfully`,
     );
     return result;

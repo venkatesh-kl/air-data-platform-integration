@@ -1,22 +1,16 @@
-const logger = (() => {
-  const stringify = (obj: Record<string, any>) => JSON.stringify(obj);
-  const info = (message: string, args?: Record<string, any>) => {
-    console.info(stringify({ ...args, message }));
-  };
+import pino from "pino";
 
-  const warning = (message: string, args?: Record<string, any>) => {
-    console.warn(stringify({ ...args, message }));
-  };
+const logLevel = process.env["LOG_LEVEL"] ?? "info";
 
-  const error = (message: string, args?: Record<string, any>) => {
-    console.error(stringify({ ...args, message }));
-  };
+const pinoLogger = pino({
+  level: logLevel,
+});
 
-  return {
-    info,
-    warning,
-    error,
-  };
-})();
+const logger = {
+  debug: pinoLogger.debug.bind(pinoLogger),
+  info: pinoLogger.info.bind(pinoLogger),
+  warn: pinoLogger.warn.bind(pinoLogger),
+  error: pinoLogger.error.bind(pinoLogger),
+};
 
 export default logger;

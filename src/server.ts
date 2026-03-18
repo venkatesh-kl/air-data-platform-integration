@@ -1,9 +1,9 @@
-import { logger } from "@diligentcorp/data-platform-api-client";
 import { serve } from "@hono/node-server";
 import { type Context, Hono } from "hono";
 import { performance } from "node:perf_hooks";
 import airDpModel from "./air-dp-model";
 import { saveJSONFile } from "./file-utils";
+import logger from "./logger";
 
 const app = new Hono();
 const port = Number(process.env["PORT"]) || 3000;
@@ -17,16 +17,23 @@ async function asyncHandler(func: HonoHandler, ctx: Context) {
     const result = await func(ctx);
     const endTime = performance.now();
     const duration = endTime - startTime;
-    logger.info(`${func.name} - completed in ${duration}ms`, { duration });
+    logger.info(`completed in ${duration}ms`, {
+      path: ctx.req.path,
+      method: ctx.req.method,
+      duration,
+    });
     return ctx.json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     const endTime = performance.now();
     const duration = endTime - startTime;
-    logger.info(
-      `${func.name} - completed in ${duration}ms with error: ${message}`,
-      { duration },
-    );
+    logger.info(`completed in ${duration}ms with error: ${message}`, {
+      path: ctx.req.path,
+      method: ctx.req.method,
+      duration,
+      error: message,
+      status: 500,
+    });
     return ctx.json({ error: message }, 500);
   }
 }
