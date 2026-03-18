@@ -9,6 +9,7 @@ const app = new Hono();
 const port = Number(process.env["PORT"]) || 3000;
 
 type HonoHandler = (ctx: Context) => Promise<any>;
+export const SUPPORTED_DATA_SOURCES = ["risk_manager"];
 
 async function asyncHandler(func: HonoHandler, ctx: Context) {
   const startTime = performance.now();
@@ -37,7 +38,23 @@ app.get("/orgs", async (ctx) =>
 app.get("/data-sources/:orgId", async (ctx) =>
   asyncHandler(async () => {
     const orgId = ctx.req.param("orgId");
-    const result = await airDpModel.getDataSources(orgId);
+    const result = await airDpModel.getDataSources(
+      orgId,
+      SUPPORTED_DATA_SOURCES,
+    );
+    saveJSONFile(`${orgId}/dataSources`, result);
+    return result;
+  }, ctx),
+);
+
+// read schema along with the data sources titles
+app.get("/data-sources/:orgId/list", async (ctx) =>
+  asyncHandler(async () => {
+    const orgId = ctx.req.param("orgId");
+    const result = await airDpModel.getDataSourcesDetailed(
+      orgId,
+      SUPPORTED_DATA_SOURCES,
+    );
     saveJSONFile(`${orgId}/dataSources`, result);
     return result;
   }, ctx),

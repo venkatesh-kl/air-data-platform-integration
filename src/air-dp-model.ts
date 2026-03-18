@@ -2,10 +2,9 @@ import {
   DataPlatformApiClient,
   type QueryResponse,
 } from "@diligentcorp/data-platform-api-client";
-import { saveJSONFile } from "./file-utils";
+import pMap from "p-map";
 import logger from "./logger";
 
-const AIR_SUPPORTED_PRODUCTS = ["risk_manager"];
 class AIRDpModel {
   private client: DataPlatformApiClient;
 
@@ -22,28 +21,15 @@ class AIRDpModel {
     return orgs.data.orgids;
   }
 
-  async getDataSources(
-    orgId: string,
-    products = ["risk_manager"],
-    saveJson = true,
-  ) {
-    const supportedProductSchemas = products.filter((product) =>
-      AIR_SUPPORTED_PRODUCTS.includes(product),
-    );
-
-    logger.info(`getDataSourcesForOrg - fetching schemas`, {
-      supportedProductSchemas,
-      orgId,
-    });
+  async getDataSources(orgId: string, products: string[]) {
     const schemasPerProduct: Array<{
       orgId: string;
       product: string;
       name: string;
     }> = [];
-    for (const product of supportedProductSchemas) {
+    for (const product of products) {
       const schemas = await this.client.getProductSchemas(product, orgId);
       console.log(`found ${schemas.length} schemas for ${orgId}/${product}`);
-      if (saveJson) saveJSONFile(`${orgId}/${product}/schemas-list`, schemas);
 
       schemasPerProduct.push(
         ...schemas.map((schema) => ({
@@ -60,6 +46,15 @@ class AIRDpModel {
     });
 
     return schemas;
+  }
+
+  async getDataSourcesDetailed(orgId: string, products: string[]) {
+    const schemas = await this.getDataSources(orgId, products);
+    return await pMap(
+      schemas,
+      (schema) => this.getSchema(orgId, schema.product, schema.name),
+      { concurrency: 4 },
+    );
   }
 
   async getSchema(orgId: string, product: string, schema: string) {

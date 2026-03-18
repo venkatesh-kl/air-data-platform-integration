@@ -6,6 +6,10 @@ GET {{baseUrl}}/orgs
 ### List data sources for an org (path param: orgId)
 GET {{baseUrl}}/data-sources/6533
 
+
+### List data sources for an org with details (path param: orgId)
+GET {{baseUrl}}/data-sources/6533/list
+
 ### Preview data for a specific org, product, schema (path params)
 GET {{baseUrl}}/preview/6533/risk_manager/controls_aggregated
 
