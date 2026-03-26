@@ -41,10 +41,13 @@ class AIRDpModel {
       );
     }
     const schemas = schemasPerProduct.flat();
-    logger.debug(`getDataSourcesForOrg - fetched schemas for org ${orgId}`, {
-      count: schemas.length,
-      orgId,
-    });
+    logger.debug(
+      {
+        count: schemas.length,
+        orgId,
+      },
+      `getDataSourcesForOrg - fetched schemas for org ${orgId}`,
+    );
 
     return schemas;
   }
@@ -88,10 +91,10 @@ class AIRDpModel {
 
     for (const dataSource of dataSourcesJson) {
       const { schema_id, product } = dataSource.schema;
-      console.log(`running for ${orgId}/${product}/${schema_id}`);
+      logger.info(`running for ${orgId}/${product}/${schema_id}`);
       const schemaUrl = `${baseUrl}/data-sources/${orgId}/${product}/${schema_id}/schema`;
       const previewUrl = `${baseUrl}/data-sources/${orgId}/${product}/${schema_id}/preview`;
-      console.log({ schemaUrl, previewUrl });
+
       await Promise.all([
         fetch(schemaUrl).then((r) => r.json()),
         fetch(previewUrl).then((r) => r.json()),
