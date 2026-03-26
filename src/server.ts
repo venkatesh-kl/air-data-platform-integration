@@ -38,15 +38,15 @@ async function asyncHandler(func: HonoHandler, ctx: Context) {
   }
 }
 
-app.get("/orgs", async (ctx) =>
-  asyncHandler(async () => await airDpModel.getallOrgs(), ctx),
-);
-
 app.get("/orgs/:orgId", async (ctx) =>
   asyncHandler(
     async () => await airDpModel.loadAllOrgData(ctx.req.param("orgId")),
     ctx,
   ),
+);
+
+app.get("/orgs", async (ctx) =>
+  asyncHandler(async () => await airDpModel.getallOrgs(), ctx),
 );
 
 // read schema along with the data sources titles

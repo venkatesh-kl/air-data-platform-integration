@@ -1,5 +1,5 @@
 @baseUrl = http://localhost:3000
-@orgId = 6533
+@orgId = 1016444
 
 ### List all orgs with data in the data platform
 GET {{baseUrl}}/orgs

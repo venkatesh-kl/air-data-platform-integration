@@ -97,6 +97,7 @@ class AIRDpModel {
         fetch(previewUrl).then((r) => r.json()),
       ]);
     }
+    return { orgId, success: true };
   }
 }
 
