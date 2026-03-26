@@ -11,20 +11,40 @@ export function cleanOutputDir(): void {
   }
 }
 
-export function saveJSONFile(filename: string, data: any): void {
-  const fpath = `${OUTPUT_DIR}/${filename}.json`;
-
-  if (!data) {
-    logger.error(`expected valid Javascript Object, received: '${data}' `);
-    return;
-  }
-
+function ensurePath(fpath: string) {
   const fileDir = path.dirname(fpath);
 
   if (!fs.existsSync(fileDir)) {
     fs.mkdirSync(fileDir, { recursive: true });
   }
+}
+
+export function saveJSONFile(filename: string, data: any): void {
+  const fpath = `${OUTPUT_DIR}/${filename}.json`;
+
+  ensurePath(fpath);
+  if (!data) {
+    logger.error(`expected valid Javascript Object, received: '${data}' `);
+    return;
+  }
 
   fs.writeFileSync(fpath, JSON.stringify(data, null, 2), "utf-8");
   logger.info(`saved to '${fpath}'`);
+}
+
+export function asyncSaveJsonFile(filename: string, data: any): void {
+  const fpath = `${OUTPUT_DIR}/${filename}.json`;
+  ensurePath(fpath);
+  if (!data) {
+    logger.error(`expected valid Javascript Object, received: '${data}' `);
+    return;
+  }
+
+  fs.writeFile(fpath, JSON.stringify(data, null, 2), (err) => {
+    if (err) {
+      logger.error(`error saving to '${fpath}': ${err}`);
+    } else {
+      logger.info(`saved to '${fpath}'`);
+    }
+  });
 }

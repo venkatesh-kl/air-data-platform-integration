@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "pnpm dlx nodemon --exec \"tsx\" ./src/server.ts --ignore ./output"
+    "start": "pnpm dlx nodemon --exec \"tsx\" ./src/server.ts --ignore ./output/**/*"
   },
   "type": "module",
   "engines": {

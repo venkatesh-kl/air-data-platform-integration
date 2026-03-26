@@ -39,13 +39,13 @@ A local server that talks to the Diligent Data Platform API: it lists organizati
 
 ## API overview
 
-| Method | Path                                       | Description                                  |
-| ------ | ------------------------------------------ | -------------------------------------------- |
-| GET    | `/orgs`                                    | List all orgs with data in the Data Platform |
-| GET    | `/data-sources/:orgId`                     | List data sources for an org                 |
-| GET    | `/data-sources/:orgId/list`                | List data sources with details               |
-| GET    | `/preview/:orgId/:product/:schema`         | Preview data for a schema                    |
-| GET    | `/preview/:orgId/:product/:schema/details` | Schema details for a product/schema          |
+| Method | Path                                              | Description                                  |
+| ------ | ------------------------------------------------- | -------------------------------------------- |
+| GET    | `/orgs`                                           | List all orgs with data in the Data Platform |
+| GET    | `/data-sources/:orgId`                            | List data sources for an org                 |
+| GET    | `/data-sources/:orgId/list`                       | List data sources with details               |
+| GET    | `/data-sources/:orgId/:product/:schemaId/schema`  | Get schema metadata                          |
+| GET    | `/data-sources/:orgId/:product/:schemaId/preview` | Preview the data of a product's schema       |
 
 See [sample-requests.rest](sample-requests.rest) for example requests. The only supported data source at the moment is `risk_manager` (see `SUPPORTED_DATA_SOURCES` in [src/server.ts](src/server.ts)).
 

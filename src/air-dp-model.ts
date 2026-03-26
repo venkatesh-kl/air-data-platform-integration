@@ -3,6 +3,7 @@ import {
   type QueryResponse,
 } from "@diligentcorp/data-platform-api-client";
 import pMap from "p-map";
+import type { DataSourceListItem } from "./data-sources-json.types";
 import logger from "./logger";
 
 class AIRDpModel {
@@ -73,10 +74,29 @@ class AIRDpModel {
       product,
       orgId,
       schema,
-      `SELECT * FROM ${schema} LIMIT 10`,
+      `SELECT * FROM ${schema} LIMIT 200`,
     );
     const { results = [] } = previewData as QueryResponse;
     return { schema, results, product, orgId };
+  }
+
+  async loadAllOrgData(orgId: string) {
+    const baseUrl = "http://localhost:3000";
+    const dataSources = await fetch(`${baseUrl}/data-sources/${orgId}/list`);
+    const dataSourcesJson: DataSourceListItem[] =
+      (await dataSources.json()) as unknown as DataSourceListItem[];
+
+    for (const dataSource of dataSourcesJson) {
+      const { schema_id, product } = dataSource.schema;
+      console.log(`running for ${orgId}/${product}/${schema_id}`);
+      const schemaUrl = `${baseUrl}/data-sources/${orgId}/${product}/${schema_id}/schema`;
+      const previewUrl = `${baseUrl}/data-sources/${orgId}/${product}/${schema_id}/preview`;
+      console.log({ schemaUrl, previewUrl });
+      await Promise.all([
+        fetch(schemaUrl).then((r) => r.json()),
+        fetch(previewUrl).then((r) => r.json()),
+      ]);
+    }
   }
 }
 
