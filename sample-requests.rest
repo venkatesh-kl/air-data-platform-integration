@@ -1,18 +1,17 @@
 @baseUrl = http://localhost:3000
-@orgId = 1016444
+@orgId = 6533
 
 ### List all orgs with data in the data platform
 GET {{baseUrl}}/orgs
 
 ### List data sources for an org with details (path param: orgId)
-GET {{baseUrl}}/data-sources/{{orgId}}/list
+GET {{baseUrl}}/{{orgId}}/data-sources/list
+
+### get schema of a specific org, product, schema (path params)
+GET {{baseUrl}}/{{orgId}}/data-sources/risk_manager/controls_aggregated/schema
 
 ### Preview data for a specific org, product, schema (path params)
-GET {{baseUrl}}/data-sources/{{orgId}}/risk_manager/controls_aggregated/preview
-
-### Preview data for a specific org, product, schema (path params)
-GET {{baseUrl}}/data-sources/{{orgId}}/risk_manager/controls_aggregated/schema
-
+GET {{baseUrl}}/{{orgId}}/data-sources/risk_manager/controls_aggregated/preview
 
 ### Load all data for an org
 GET {{baseUrl}}/orgs/{{orgId}}

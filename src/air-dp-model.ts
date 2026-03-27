@@ -15,14 +15,19 @@ class AIRDpModel {
 
   async getallOrgs(): Promise<string[]> {
     logger.debug(`getallOrgs - fetching all orgs`);
-    const orgs = await this.client.fetchOrganizations();
-    logger.debug(`getallOrgs - successfully fetched orgs`, {
-      orgCount: orgs.data.count,
-    });
-    return orgs.data.orgids;
+    const response = await this.client.fetchOrganizations();
+
+    logger.debug(
+      {
+        orgCount: response?.data?.count ?? 0,
+      },
+      `getallOrgs - successfully fetched orgs`,
+    );
+
+    return response?.data?.orgids ?? [];
   }
 
-  async getDataSources(orgId: string, products: string[]) {
+  async getDataSourcesDetailed(orgId: string, products: string[]) {
     const schemasPerProduct: Array<{
       orgId: string;
       product: string;
@@ -30,7 +35,9 @@ class AIRDpModel {
     }> = [];
     for (const product of products) {
       const schemas = await this.client.getProductSchemas(product, orgId);
-      logger.debug(`found ${schemas.length} schemas for ${orgId}/${product}`);
+      logger.debug(
+        `getDataSourcesDetailed - found ${schemas.length} schemas for ${orgId}/${product}`,
+      );
 
       schemasPerProduct.push(
         ...schemas.map((schema) => ({
@@ -46,14 +53,9 @@ class AIRDpModel {
         count: schemas.length,
         orgId,
       },
-      `getDataSourcesForOrg - fetched schemas for org ${orgId}`,
+      `getDataSourcesDetailed - fetched schemas for org ${orgId}`,
     );
 
-    return schemas;
-  }
-
-  async getDataSourcesDetailed(orgId: string, products: string[]) {
-    const schemas = await this.getDataSources(orgId, products);
     return await pMap(
       schemas,
       (schema) => this.getSchema(orgId, schema.product, schema.name),
@@ -77,7 +79,7 @@ class AIRDpModel {
       product,
       orgId,
       schema,
-      `SELECT * FROM ${schema} LIMIT 200`,
+      `SELECT * FROM ${schema} LIMIT 500`,
     );
     const { results = [] } = previewData as QueryResponse;
     return { schema, results, product, orgId };

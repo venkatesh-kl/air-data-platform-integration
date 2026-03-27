@@ -55,7 +55,7 @@ app.get("/orgs", async (ctx) =>
 );
 
 // read schema along with the data sources titles
-app.get("/data-sources/:orgId/list", async (ctx) =>
+app.get("/:orgId/data-sources/list", async (ctx) =>
   asyncHandler(async () => {
     const orgId = ctx.req.param("orgId");
     const result = await airDpModel.getDataSourcesDetailed(
@@ -67,22 +67,23 @@ app.get("/data-sources/:orgId/list", async (ctx) =>
   }, ctx),
 );
 
-app.get("/data-sources/:orgId/:product/:schema/preview", async (ctx) =>
+app.get("/:orgId/data-sources/:product/:schema/preview", async (ctx) =>
   asyncHandler(async () => {
     const orgId = ctx.req.param("orgId");
     const product = ctx.req.param("product");
     const schema = ctx.req.param("schema");
+
     const result = await airDpModel.getPreviewData(orgId, product, schema);
     asyncSaveJsonFile(`${orgId}/${product}/${schema}/preview`, result);
     return result;
   }, ctx),
 );
 
-app.get("/data-sources/:orgId/:product/:schema/schema", async (ctx) =>
+app.get("/:orgId/data-sources/:product/:schema/schema", async (ctx) =>
   asyncHandler(async () => {
-    const orgId = ctx.req.param("orgId");
-    const product = ctx.req.param("product");
-    const schema = ctx.req.param("schema");
+    const orgId = ctx.req.param("orgId")!;
+    const product = ctx.req.param("product")!;
+    const schema = ctx.req.param("schema")!;
     const result = await airDpModel.getSchema(orgId, product, schema);
     asyncSaveJsonFile(`${orgId}/${product}/${schema}/schema`, result);
     return result;
