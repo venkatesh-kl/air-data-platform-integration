@@ -2,7 +2,8 @@ import { serve } from "@hono/node-server";
 import { type Context, Hono } from "hono";
 import { performance } from "node:perf_hooks";
 import airDpModel from "./air-dp-model";
-import { asyncSaveJsonFile } from "./file-utils";
+import type { DataSourceListItem } from "./data-sources-json.types";
+import { asyncSaveJsonFile, saveJSONFile } from "./file-utils";
 import logger from "./logger";
 
 const app = new Hono();
@@ -44,10 +45,33 @@ async function asyncHandler(func: HonoHandler, context: Context) {
 }
 
 app.get("/orgs/:orgId", async (ctx) =>
-  asyncHandler(
-    async () => await airDpModel.loadAllOrgData(ctx.req.param("orgId")),
-    ctx,
-  ),
+  asyncHandler(async () => {
+    const orgId = ctx.req.param("orgId")!.trim();
+    logger.info(`get-org-data - in handler for org ${orgId}`);
+    const baseUrl = "http://localhost:3000";
+    const dataSourcesUrl = `${baseUrl}/${orgId}/data-sources/list`;
+    logger.info(
+      `get-org-data - fetching data sources for org ${orgId} from ${dataSourcesUrl}`,
+    );
+    const dataSources = await fetch(dataSourcesUrl);
+    console.log(dataSources);
+    const dataSourcesJson: DataSourceListItem[] =
+      (await dataSources.json()) as unknown as DataSourceListItem[];
+    saveJSONFile("${orgId}/dataSources", dataSourcesJson);
+
+    for (const dataSource of dataSourcesJson) {
+      const { schema_id, product } = dataSource.schema;
+      logger.info(`running for ${orgId}/${product}/${schema_id}`);
+      const schemaUrl = `${baseUrl}/${orgId}/data-sources/${product}/${schema_id}/schema`;
+      const previewUrl = `${baseUrl}/${orgId}/data-sources/${product}/${schema_id}/preview`;
+
+      await Promise.all([
+        fetch(schemaUrl).then((r) => r.json()),
+        fetch(previewUrl).then((r) => r.json()),
+      ]);
+    }
+    return { orgId, success: true };
+  }, ctx),
 );
 
 app.get("/orgs", async (ctx) =>
@@ -57,6 +81,7 @@ app.get("/orgs", async (ctx) =>
 // read schema along with the data sources titles
 app.get("/:orgId/data-sources/list", async (ctx) =>
   asyncHandler(async () => {
+    logger.info(`get-datasources - in handler`);
     const orgId = ctx.req.param("orgId");
     const result = await airDpModel.getDataSourcesDetailed(
       orgId,
